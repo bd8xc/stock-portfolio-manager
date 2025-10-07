@@ -1,3 +1,4 @@
+
 SELECT * FROM Users;
 SELECT * FROM Stocks;
 SELECT * FROM Portfolios;
@@ -10,4 +11,3 @@ SELECT * FROM Watchlist;
 SELECT * FROM Sectors;
 SELECT * FROM Stock_Sectors;
 SELECT * FROM Settings;
-    
