@@ -30,10 +30,8 @@ stock-portfolio-manager-sql/
 3. Run the scripts in the following order:
 
 ```sql
--- Create tables
 source create_tables.sql;
 
--- Insert sample data
 source insert_sample_data.sql;
 ```
 
