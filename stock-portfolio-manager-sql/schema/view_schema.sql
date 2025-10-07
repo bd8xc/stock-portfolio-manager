@@ -1,0 +1,12 @@
+DESC Users;
+DESC Stocks;
+DESC Portfolios;
+DESC Portfolio_Stocks;
+DESC Transactions;
+DESC Stock_Prices;
+DESC Dividends;
+DESC Alerts;
+DESC Watchlist;
+DESC Sectors;
+DESC Stock_Sectors;
+DESC Settings;
