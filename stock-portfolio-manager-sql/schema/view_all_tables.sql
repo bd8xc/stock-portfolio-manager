@@ -10,3 +10,4 @@ SELECT * FROM Watchlist;
 SELECT * FROM Sectors;
 SELECT * FROM Stock_Sectors;
 SELECT * FROM Settings;
+    
