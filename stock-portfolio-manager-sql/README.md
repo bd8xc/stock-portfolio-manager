@@ -1,6 +1,3 @@
-Here’s a simple `README.md` you can use for your project:
-
----
 
 # Stock Portfolio Manager SQL
 
