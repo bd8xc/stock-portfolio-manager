@@ -1,259 +1,219 @@
-
-# Stock Portfolio Manager SQL
-
-A simple SQL-based project to manage stock portfolios.
-
-## Project Structure
-
-```
-stock-portfolio-manager-sql/
-│
-├── schema/
-│   ├── create_tables.sql       
-│   ├── insert_sample_data.sql   
-│   └── drop_tables.sql         
-│
-├── diagrams/
-│   └── er_diagram.png           
-│
-├── README.md                    
-└── LICENSE                      
-```
-### Table schema
+Here’s the cleaned-up README without highlights or extra formatting:
 
 ---
 
+# Stock Portfolio Management Database
+
+## Abstract
+
+This database is designed to manage users, their stock portfolios, transactions, watchlists, and related stock market information. It supports tracking real-time stock prices, dividend payouts, sector classification, user alerts, and personalized notification settings. The schema ensures data integrity through primary keys, foreign keys, unique constraints, and appropriate data types.
+
+---
+
+## Database Schema Breakdown
+
 ### 1. Users
 
-**Attributes:**
+Stores information about users of the system.
+Columns:
 
-* `user_id` – INT, AUTO_INCREMENT
-* `name` – VARCHAR(100), NOT NULL
-* `email` – VARCHAR(100), UNIQUE, NOT NULL
-* `created_at` – TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+- user_id INT AUTO_INCREMENT PRIMARY KEY → Unique identifier for each user.
+- name VARCHAR(100) NOT NULL → User's name.
+- email VARCHAR(100) UNIQUE NOT NULL → User's unique email.
+- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP → Timestamp of user creation.
 
-**Constraints:**
+Constraints:
 
-* Primary Key: `user_id`
-* Unique: `email`
+- Primary Key on user_id.
+- Unique constraint on email.
 
 ---
 
 ### 2. Stocks
 
-**Attributes:**
+Stores details of available stocks.
+Columns:
 
-* `stock_id` – INT, AUTO_INCREMENT
-* `symbol` – VARCHAR(10), UNIQUE, NOT NULL
-* `company_name` – VARCHAR(100), NOT NULL
-* `current_price` – DECIMAL(10,2), NOT NULL
-* `created_at` – TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+- stock_id INT AUTO_INCREMENT PRIMARY KEY → Unique stock identifier.
+- symbol VARCHAR(10) UNIQUE NOT NULL → Stock symbol (e.g., AAPL).
+- company_name VARCHAR(100) NOT NULL → Name of the company.
+- current_price DECIMAL(10,2) → Current price of the stock.
 
-**Constraints:**
+Constraints:
 
-* Primary Key: `stock_id`
-* Unique: `symbol`
+- Primary Key on stock_id.
+- Unique constraint on symbol.
 
 ---
 
 ### 3. Portfolios
 
-**Attributes:**
+Represents user portfolios.
+Columns:
 
-* `portfolio_id` – INT, AUTO_INCREMENT
-* `user_id` – INT, NOT NULL
-* `name` – VARCHAR(100), NOT NULL
-* `created_at` – TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+- portfolio_id INT AUTO_INCREMENT PRIMARY KEY → Unique portfolio ID.
+- user_id INT → Reference to Users.
+- name VARCHAR(100) → Portfolio name.
 
-**Constraints:**
+Constraints:
 
-* Primary Key: `portfolio_id`
-* Foreign Key: `user_id` → `Users(user_id)` ON DELETE CASCADE
+- Primary Key on portfolio_id.
+- Foreign Key user_id references Users(user_id).
 
 ---
 
 ### 4. Portfolio_Stocks
 
-**Attributes:**
+Tracks the stocks held in each portfolio.
+Columns:
 
-* `portfolio_stock_id` – INT, AUTO_INCREMENT
-* `portfolio_id` – INT, NOT NULL
-* `stock_id` – INT, NOT NULL
-* `quantity` – INT, NOT NULL
-* `avg_price` – DECIMAL(10,2), NOT NULL
+- portfolio_id INT → Reference to Portfolios.
+- stock_id INT → Reference to Stocks.
+- quantity INT → Number of shares.
+- avg_price DECIMAL(10,2) → Average purchase price.
 
-**Constraints:**
+Constraints:
 
-* Primary Key: `portfolio_stock_id`
-* Foreign Keys:
-
-  * `portfolio_id` → `Portfolios(portfolio_id)` ON DELETE CASCADE
-  * `stock_id` → `Stocks(stock_id)` ON DELETE CASCADE
+- Primary Key on (portfolio_id, stock_id).
+- Foreign Keys to Portfolios(portfolio_id) and Stocks(stock_id).
 
 ---
 
 ### 5. Transactions
 
-**Attributes:**
+Records all buy/sell transactions.
+Columns:
 
-* `transaction_id` – INT, AUTO_INCREMENT
-* `portfolio_id` – INT, NOT NULL
-* `stock_id` – INT, NOT NULL
-* `transaction_type` – ENUM('BUY','SELL'), NOT NULL
-* `quantity` – INT, NOT NULL
-* `price` – DECIMAL(10,2), NOT NULL
-* `transaction_date` – DATETIME, DEFAULT CURRENT_TIMESTAMP
+- transaction_id INT AUTO_INCREMENT PRIMARY KEY → Unique transaction ID.
+- portfolio_id INT → Reference to Portfolios.
+- stock_id INT → Reference to Stocks.
+- transaction_type ENUM('BUY', 'SELL') → Type of transaction.
+- quantity INT → Number of shares.
+- price DECIMAL(10,2) → Price per share.
+- transaction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP → Time of transaction.
 
-**Constraints:**
+Constraints:
 
-* Primary Key: `transaction_id`
-* Foreign Keys:
-
-  * `portfolio_id` → `Portfolios(portfolio_id)`
-  * `stock_id` → `Stocks(stock_id)`
+- Primary Key on transaction_id.
+- Foreign Keys to Portfolios(portfolio_id) and Stocks(stock_id).
 
 ---
 
 ### 6. Stock_Prices
 
-**Attributes:**
+Stores historical stock prices.
+Columns:
 
-* `price_id` – INT, AUTO_INCREMENT
-* `stock_id` – INT, NOT NULL
-* `price` – DECIMAL(10,2), NOT NULL
-* `price_date` – DATETIME, NOT NULL
+- stock_id INT → Reference to Stocks.
+- price DECIMAL(10,2) → Stock price.
+- price_date DATETIME → Timestamp of the price.
 
-**Constraints:**
+Constraints:
 
-* Primary Key: `price_id`
-* Foreign Key: `stock_id` → `Stocks(stock_id)`
+- Primary Key on (stock_id, price_date).
+- Foreign Key to Stocks(stock_id).
 
 ---
 
 ### 7. Dividends
 
-**Attributes:**
+Records dividend payouts for stocks.
+Columns:
 
-* `dividend_id` – INT, AUTO_INCREMENT
-* `stock_id` – INT, NOT NULL
-* `amount` – DECIMAL(10,2), NOT NULL
-* `dividend_date` – DATE, NOT NULL
+- dividend_id INT AUTO_INCREMENT PRIMARY KEY → Unique dividend ID.
+- stock_id INT → Reference to Stocks.
+- amount DECIMAL(10,2) → Dividend amount per share.
+- dividend_date DATE → Dividend payout date.
 
-**Constraints:**
+Constraints:
 
-* Primary Key: `dividend_id`
-* Foreign Key: `stock_id` → `Stocks(stock_id)`
+- Primary Key on dividend_id.
+- Foreign Key to Stocks(stock_id).
 
 ---
 
 ### 8. Alerts
 
-**Attributes:**
+Tracks user-defined stock price alerts.
+Columns:
 
-* `alert_id` – INT, AUTO_INCREMENT
-* `user_id` – INT, NOT NULL
-* `stock_id` – INT, NOT NULL
-* `target_price` – DECIMAL(10,2), NOT NULL
-* `alert_type` – ENUM('ABOVE','BELOW'), NOT NULL
-* `active` – BOOLEAN, DEFAULT TRUE
+- alert_id INT AUTO_INCREMENT PRIMARY KEY → Unique alert ID.
+- user_id INT → Reference to Users.
+- stock_id INT → Reference to Stocks.
+- target_price DECIMAL(10,2) → Price that triggers the alert.
+- alert_type ENUM('ABOVE', 'BELOW') → Type of alert.
+- active BOOLEAN → Whether alert is active.
 
-**Constraints:**
+Constraints:
 
-* Primary Key: `alert_id`
-* Foreign Keys:
-
-  * `user_id` → `Users(user_id)`
-  * `stock_id` → `Stocks(stock_id)`
+- Primary Key on alert_id.
+- Foreign Keys to Users(user_id) and Stocks(stock_id).
 
 ---
 
 ### 9. Watchlist
 
-**Attributes:**
+Tracks stocks that a user is watching.
+Columns:
 
-* `watchlist_id` – INT, AUTO_INCREMENT
-* `user_id` – INT, NOT NULL
-* `stock_id` – INT, NOT NULL
-* `created_at` – TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+- user_id INT → Reference to Users.
+- stock_id INT → Reference to Stocks.
 
-**Constraints:**
+Constraints:
 
-* Primary Key: `watchlist_id`
-* Foreign Keys:
-
-  * `user_id` → `Users(user_id)`
-  * `stock_id` → `Stocks(stock_id)`
+- Primary Key on (user_id, stock_id).
+- Foreign Keys to Users(user_id) and Stocks(stock_id).
 
 ---
 
 ### 10. Sectors
 
-**Attributes:**
+Stores stock market sectors.
+Columns:
 
-* `sector_id` – INT, AUTO_INCREMENT
-* `name` – VARCHAR(50), UNIQUE, NOT NULL
+- sector_id INT AUTO_INCREMENT PRIMARY KEY → Unique sector ID.
+- name VARCHAR(100) UNIQUE → Sector name (e.g., Technology).
 
-**Constraints:**
+Constraints:
 
-* Primary Key: `sector_id`
-* Unique: `name`
+- Primary Key on sector_id.
+- Unique constraint on name.
 
 ---
 
 ### 11. Stock_Sectors
 
-**Attributes:**
+Associates stocks with sectors.
+Columns:
 
-* `stock_sector_id` – INT, AUTO_INCREMENT
-* `stock_id` – INT, NOT NULL
-* `sector_id` – INT, NOT NULL
+- stock_id INT → Reference to Stocks.
+- sector_id INT → Reference to Sectors.
 
-**Constraints:**
+Constraints:
 
-* Primary Key: `stock_sector_id`
-* Foreign Keys:
-
-  * `stock_id` → `Stocks(stock_id)`
-  * `sector_id` → `Sectors(sector_id)`
+- Primary Key on (stock_id, sector_id).
+- Foreign Keys to Stocks(stock_id) and Sectors(sector_id).
 
 ---
 
 ### 12. Settings
 
-**Attributes:**
+Stores user notification preferences.
+Columns:
 
-* `setting_id` – INT, AUTO_INCREMENT
-* `user_id` – INT, NOT NULL
-* `email_notifications` – BOOLEAN, DEFAULT TRUE
-* `sms_notifications` – BOOLEAN, DEFAULT FALSE
+- user_id INT PRIMARY KEY → Reference to Users.
+- email_notifications BOOLEAN → Email notification preference.
+- sms_notifications BOOLEAN → SMS notification preference.
 
-**Constraints:**
+Constraints:
 
-* Primary Key: `setting_id`
-* Foreign Key: `user_id` → `Users(user_id)`
-* Relationship: 1:1 (each user has one settings row)
+- Primary Key on user_id.
+- Foreign Key to Users(user_id).
 
 ---
 
+This schema enforces data integrity, avoids duplication, and supports advanced stock portfolio operations.
 
-## Setup
+---
 
-1. Make sure you have MySQL or another SQL database installed.
-2. Open a terminal and navigate to the `schema/` directory.
-3. Run the scripts in the following order:
-
-```sql
-source create_tables.sql;
-
-source insert_sample_data.sql;
-```
-
-4. To clean up, run:
-
-```sql
-source drop_tables.sql;
-```
-
-## License
-
-This project is licensed under the MIT License.
+If you want, I can now create a **clean ER diagram** to visually represent this schema for easier understanding. Do you want me to do that?

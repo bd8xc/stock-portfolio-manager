@@ -1,4 +1,3 @@
-USE stock_portfolio_manager;
 
 INSERT INTO Users (name, email) VALUES 
 ('Alice', 'alice@example.com'),
@@ -19,7 +18,7 @@ INSERT INTO Stocks (symbol, company_name, current_price) VALUES
 ('MSFT', 'Microsoft Corp.', 300.10),
 ('AMZN', 'Amazon.com Inc.', 3500.00),
 ('NFLX', 'Netflix Inc.', 500.25),
-('FB', 'Meta Platforms Inc.', 330.50),
+('META', 'Meta Platforms Inc.', 330.50),
 ('NVDA', 'NVIDIA Corp.', 550.75),
 ('BABA', 'Alibaba Group', 200.10),
 ('ORCL', 'Oracle Corp.', 90.50);
