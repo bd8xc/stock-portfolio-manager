@@ -1,4 +1,3 @@
-
 INSERT INTO Users (name, email) VALUES 
 ('Alice', 'alice@example.com'),
 ('Bob', 'bob@example.com'),
@@ -47,17 +46,17 @@ INSERT INTO Portfolio_Stocks (portfolio_id, stock_id, quantity, avg_price) VALUE
 (6, 9, 10, 190.00),
 (7, 10, 30, 85.00);
 
-INSERT INTO Transactions (portfolio_id, stock_id, transaction_type, quantity, price) VALUES
-(1, 1, 'BUY', 10, 175.00),
-(1, 2, 'BUY', 5, 2750.00),
-(2, 3, 'BUY', 8, 700.00),
-(2, 4, 'BUY', 15, 290.00),
-(3, 5, 'BUY', 12, 3400.00),
-(3, 6, 'BUY', 7, 480.00),
-(4, 7, 'BUY', 20, 320.00),
-(5, 8, 'BUY', 25, 500.00),
-(6, 9, 'BUY', 10, 190.00),
-(7, 10, 'BUY', 30, 85.00);
+INSERT INTO Transactions (portfolio_id, stock_id, transaction_time, transaction_type, quantity, price) VALUES
+(1, 1, '2025-10-13 09:00:00', 'BUY', 10, 175.00),
+(1, 2, '2025-10-13 09:05:00', 'BUY', 5, 2750.00),
+(2, 3, '2025-10-13 09:10:00', 'BUY', 8, 700.00),
+(2, 4, '2025-10-13 09:15:00', 'BUY', 15, 290.00),
+(3, 5, '2025-10-13 09:20:00', 'BUY', 12, 3400.00),
+(3, 6, '2025-10-13 09:25:00', 'BUY', 7, 480.00),
+(4, 7, '2025-10-13 09:30:00', 'BUY', 20, 320.00),
+(5, 8, '2025-10-13 09:35:00', 'BUY', 25, 500.00),
+(6, 9, '2025-10-13 09:40:00', 'BUY', 10, 190.00),
+(7, 10, '2025-10-13 09:45:00', 'BUY', 30, 85.00);
 
 INSERT INTO Stock_Prices (stock_id, price, price_date) VALUES
 (1, 180.50, '2025-10-07 09:00:00'),

@@ -30,21 +30,21 @@ CREATE TABLE Portfolio_Stocks (
 );
 
 CREATE TABLE Transactions (
-    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     portfolio_id INT,
     stock_id INT,
+    transaction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     transaction_type ENUM('BUY', 'SELL'),
     quantity INT,
     price DECIMAL(10,2),
-    transaction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (portfolio_id, stock_id, transaction_time),
     FOREIGN KEY (portfolio_id) REFERENCES Portfolios(portfolio_id),
     FOREIGN KEY (stock_id) REFERENCES Stocks(stock_id)
 );
 
 CREATE TABLE Stock_Prices (
     stock_id INT,
-    price DECIMAL(10,2),
     price_date DATETIME,
+    price DECIMAL(10,2),
     PRIMARY KEY (stock_id, price_date),
     FOREIGN KEY (stock_id) REFERENCES Stocks(stock_id)
 );
@@ -58,12 +58,12 @@ CREATE TABLE Dividends (
 );
 
 CREATE TABLE Alerts (
-    alert_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
     stock_id INT,
     target_price DECIMAL(10,2),
     alert_type ENUM('ABOVE', 'BELOW'),
     active BOOLEAN,
+    PRIMARY KEY (user_id, stock_id),
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (stock_id) REFERENCES Stocks(stock_id)
 );
