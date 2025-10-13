@@ -1,6 +1,4 @@
-Here’s the cleaned-up README without highlights or extra formatting:
 
----
 
 # Stock Portfolio Management Database
 
