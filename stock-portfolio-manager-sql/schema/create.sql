@@ -1,4 +1,4 @@
--- USERS
+-- 1. USERS
 CREATE TABLE Users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -6,7 +6,7 @@ CREATE TABLE Users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- STOCKS
+-- 2. STOCKS
 CREATE TABLE Stocks (
     stock_id INT AUTO_INCREMENT PRIMARY KEY,
     symbol VARCHAR(10) UNIQUE NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE Stocks (
     current_price DECIMAL(10,2)
 );
 
--- PORTFOLIOS
+-- 3. PORTFOLIOS
 CREATE TABLE Portfolios (
     portfolio_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -22,7 +22,7 @@ CREATE TABLE Portfolios (
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
--- PORTFOLIO_STOCKS
+-- 4. PORTFOLIO_STOCKS
 CREATE TABLE Portfolio_Stocks (
     portfolio_id INT,
     stock_id INT,
@@ -33,7 +33,7 @@ CREATE TABLE Portfolio_Stocks (
     FOREIGN KEY (stock_id) REFERENCES Stocks(stock_id)
 );
 
--- TRANSACTIONS
+-- 5. TRANSACTIONS
 CREATE TABLE Transactions (
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     portfolio_id INT,
@@ -46,7 +46,7 @@ CREATE TABLE Transactions (
     FOREIGN KEY (stock_id) REFERENCES Stocks(stock_id)
 );
 
--- STOCK_PRICES
+-- 6. STOCK_PRICES
 CREATE TABLE Stock_Prices (
     stock_id INT,
     price DECIMAL(10,2),
@@ -55,7 +55,7 @@ CREATE TABLE Stock_Prices (
     FOREIGN KEY (stock_id) REFERENCES Stocks(stock_id)
 );
 
--- DIVIDENDS
+-- 7. DIVIDENDS
 CREATE TABLE Dividends (
     dividend_id INT AUTO_INCREMENT PRIMARY KEY,
     stock_id INT,
@@ -64,7 +64,7 @@ CREATE TABLE Dividends (
     FOREIGN KEY (stock_id) REFERENCES Stocks(stock_id)
 );
 
--- ALERTS
+-- 8. ALERTS
 CREATE TABLE Alerts (
     alert_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -76,7 +76,7 @@ CREATE TABLE Alerts (
     FOREIGN KEY (stock_id) REFERENCES Stocks(stock_id)
 );
 
--- WATCHLIST
+-- 9. WATCHLIST
 CREATE TABLE Watchlist (
     user_id INT,
     stock_id INT,
@@ -85,13 +85,13 @@ CREATE TABLE Watchlist (
     FOREIGN KEY (stock_id) REFERENCES Stocks(stock_id)
 );
 
--- SECTORS
+-- 10. SECTORS
 CREATE TABLE Sectors (
     sector_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) UNIQUE
 );
 
--- STOCK_SECTORS
+-- 11. STOCK_SECTORS
 CREATE TABLE Stock_Sectors (
     stock_id INT,
     sector_id INT,
@@ -100,7 +100,7 @@ CREATE TABLE Stock_Sectors (
     FOREIGN KEY (sector_id) REFERENCES Sectors(sector_id)
 );
 
--- SETTINGS
+-- 12. SETTINGS
 CREATE TABLE Settings (
     user_id INT PRIMARY KEY,
     email_notifications BOOLEAN,
