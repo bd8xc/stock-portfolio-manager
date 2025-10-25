@@ -236,4 +236,3 @@ INSERT IGNORE INTO Portfolio_Stocks(portfolio_id, stock_id, quantity, avg_price)
 (5,5,8,800);
 ```
 
-Do you want me to do that?
