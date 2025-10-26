@@ -1,7 +1,3 @@
-Absolutely! Here’s the **full README** with all sections, clean and professional, **without emojis**, and including the Swagger testing guide and environment setup.
-
----
-
 # Stock Portfolio Management Database — Complete Overview
 
 ## Abstract
