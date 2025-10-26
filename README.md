@@ -1,4 +1,4 @@
-# Stock Portfolio Management Database — Complete Overview
+# Stock Portfolio Management Database
 
 ## Abstract
 
@@ -428,5 +428,92 @@ This project provides:
 * Full support for real-time updates and alert notifications
 * Swagger-based manual testing for easy verification
 
+---
+
+# Backend Router SQL & Function Reference
+
+## Users Router (`/users`)
+
+| Method | Endpoint            | SQL / Procedure Called                                                       | Description                               |
+| ------ | ------------------- | ---------------------------------------------------------------------------- | ----------------------------------------- |
+| POST   | `/create`           | `INSERT INTO Users (name, email) VALUES (%s, %s)`                            | Creates a new user and returns `user_id`. |
+| GET    | `/`                 | `SELECT * FROM Users`                                                        | Returns all users.                        |
+| GET    | `/{user_id}`        | `SELECT * FROM Users WHERE user_id=%s`                                       | Returns single user by ID.                |
+| PUT    | `/update/{user_id}` | `UPDATE Users SET name=%s, email=%s WHERE user_id=%s` (only fields provided) | Updates name/email of a user.             |
+| DELETE | `/delete/{user_id}` | `DELETE FROM Users WHERE user_id=%s`                                         | Deletes the user.                         |
+
+---
+
+## Stocks Router (`/stocks`)
+
+| Method | Endpoint                   | SQL / Procedure Called                                                         | Description                                                                   |
+| ------ | -------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| GET    | `/`                        | `SELECT * FROM Stocks`                                                         | Returns all stocks.                                                           |
+| GET    | `/{stock_id}`              | `SELECT * FROM Stocks WHERE stock_id=%s`                                       | Returns single stock by ID.                                                   |
+| POST   | `/`                        | `INSERT INTO Stocks (symbol, company_name, current_price) VALUES (%s, %s, %s)` | Adds a new stock.                                                             |
+| PUT    | `/update-price/{stock_id}` | Calls stored procedure `insert_stock_price(stock_id, current_price)`           | Updates `Stocks.current_price`, inserts into `Stock_Prices`, triggers alerts. |
+| DELETE | `/{stock_id}`              | `DELETE FROM Stocks WHERE stock_id=%s`                                         | Deletes a stock.                                                              |
+
+---
+
+## Portfolios Router (`/portfolios`)
+
+| Method | Endpoint          | SQL / Procedure Called                                                                   | Description                     |
+| ------ | ----------------- | ---------------------------------------------------------------------------------------- | ------------------------------- |
+| GET    | `/`               | `SELECT * FROM Portfolios`                                                               | Returns all portfolios.         |
+| GET    | `/{portfolio_id}` | `SELECT * FROM Portfolios WHERE portfolio_id=%s`                                         | Returns a single portfolio.     |
+| POST   | `/`               | `INSERT INTO Portfolios (user_id, name) VALUES (%s, %s)`                                 | Creates a new portfolio.        |
+| PUT    | `/{portfolio_id}` | `UPDATE Portfolios SET name=%s, user_id=%s WHERE portfolio_id=%s` (only fields provided) | Updates portfolio name or user. |
+| DELETE | `/{portfolio_id}` | `DELETE FROM Portfolios WHERE portfolio_id=%s`                                           | Deletes the portfolio.          |
+
+---
+
+## Transactions Router (`/transactions`)
+
+| Method | Endpoint            | SQL / Procedure Called                                                                                  | Description                                                                            |
+| ------ | ------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| GET    | `/`                 | `SELECT * FROM Transactions`                                                                            | Returns all transactions.                                                              |
+| GET    | `/{transaction_id}` | `SELECT * FROM Transactions WHERE transaction_id=%s`                                                    | Returns single transaction.                                                            |
+| POST   | `/`                 | Calls stored procedure `execute_transaction(portfolio_id, stock_id, transaction_type, quantity, price)` | Handles BUY/SELL transaction, updates `Portfolio_Stocks`, inserts into `Transactions`. |
+| DELETE | `/{transaction_id}` | `DELETE FROM Transactions WHERE transaction_id=%s`                                                      | Deletes a transaction.                                                                 |
+
+---
+
+## Portfolio Stocks Router (`/portfolio-stocks`)
+
+| Method | Endpoint          | SQL / Procedure Called                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Description                                                          |
+| ------ | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| GET    | `/{portfolio_id}` | Complex aggregation query:<br>`sql<br>SELECT t.stock_id, s.symbol, s.company_name,<br>SUM(CASE WHEN t.transaction_type='BUY' THEN t.quantity WHEN t.transaction_type='SELL' THEN -t.quantity ELSE 0 END) AS quantity,<br>CASE WHEN SUM(CASE WHEN t.transaction_type='BUY' THEN t.quantity ELSE 0 END) = 0 THEN 0<br>ELSE SUM(CASE WHEN t.transaction_type='BUY' THEN t.quantity * t.price ELSE 0 END)/SUM(CASE WHEN t.transaction_type='BUY' THEN t.quantity ELSE 0 END) END AS avg_price<br>FROM Transactions t JOIN Stocks s ON t.stock_id = s.stock_id<br>WHERE t.portfolio_id=%s<br>GROUP BY t.stock_id HAVING quantity>0<br>` | Returns current holdings of a portfolio and average purchase prices. |
+
+---
+
+## Alerts Router (`/alerts`)
+
+| Method | Endpoint                | SQL / Procedure Called                                                                                                                 | Description                                        |
+| ------ | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| POST   | `/`                     | `INSERT INTO Alerts (user_id, stock_id, target_price, alert_type, active) VALUES (%s, %s, %s, %s, %s)`                                 | Creates a new alert.                               |
+| GET    | `/{user_id}`            | `SELECT * FROM Alerts WHERE user_id=%s`                                                                                                | Retrieves all alerts for a user.                   |
+| PUT    | `/{user_id}/{stock_id}` | `UPDATE Alerts SET target_price=%s WHERE user_id=%s AND stock_id=%s`<br>`UPDATE Alerts SET active=%s WHERE user_id=%s AND stock_id=%s` | Updates target price or active status of an alert. |
+| DELETE | `/{user_id}/{stock_id}` | `DELETE FROM Alerts WHERE user_id=%s AND stock_id=%s`                                                                                  | Deletes an alert.                                  |
+
+---
+
+## Functions Router (`/functions`)
+
+| Method | Endpoint                               | SQL / Procedure Called         | Description                                               |
+| ------ | -------------------------------------- | ------------------------------ | --------------------------------------------------------- |
+| GET    | `/avg-price/{portfolio_id}/{stock_id}` | `SELECT get_avg_price(%s, %s)` | Returns average purchase price of a stock in a portfolio. |
+| GET    | `/has-stock/{portfolio_id}/{stock_id}` | `SELECT has_stock(%s, %s)`     | Returns 1 if portfolio holds the stock, else 0.           |
+| GET    | `/total-shares/{portfolio_id}`         | `SELECT total_shares(%s)`      | Returns total number of shares in a portfolio.            |
+
+---
+
+## Watchlist Router (`/watchlist`)
+
+| Method | Endpoint                | SQL / Procedure Called                                      | Description                     |
+| ------ | ----------------------- | ----------------------------------------------------------- | ------------------------------- |
+| POST   | `/`                     | `INSERT INTO Watchlist (user_id, stock_id) VALUES (%s, %s)` | Adds a stock to user watchlist. |
+| GET    | `/{user_id}`            | `SELECT * FROM Watchlist WHERE user_id=%s`                  | Retrieves watchlist for a user. |
+| DELETE | `/{user_id}/{stock_id}` | `DELETE FROM Watchlist WHERE user_id=%s AND stock_id=%s`    | Removes stock from watchlist.   |
 
 
