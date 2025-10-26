@@ -1,22 +1,28 @@
-# **Stock Portfolio Management Database — Complete Overview**
-## **Abstract**
-
-This database manages users, their stock portfolios, transactions, watchlists, and related stock market information.
-It supports:
-
-* Tracking real-time stock prices
-* Dividend payouts
-* Sector classification
-* User alerts
-* Personalized notification settings
-
-Data integrity is enforced using **primary keys, foreign keys, unique constraints, and appropriate data types**.
+Absolutely! Here’s the **full README** with all sections, clean and professional, **without emojis**, and including the Swagger testing guide and environment setup.
 
 ---
 
-## **Database Tables & Schema**
+# Stock Portfolio Management Database — Complete Overview
 
-### **1. Users**
+## Abstract
+
+This database manages **users**, their **stock portfolios**, **transactions**, **watchlists**, and related **stock market information**.
+
+It supports:
+
+* Tracking **real-time stock prices**
+* Recording **dividend payouts**
+* Managing **sector classifications**
+* Setting **user alerts** and **notifications**
+* Maintaining **data integrity** with proper constraints
+
+Data integrity is enforced using **primary keys**, **foreign keys**, **unique constraints**, and **appropriate data types**.
+
+---
+
+## Database Tables & Schema
+
+### 1. Users
 
 Stores system users.
 
@@ -29,7 +35,7 @@ Stores system users.
 
 ---
 
-### **2. Stocks**
+### 2. Stocks
 
 Details of available stocks.
 
@@ -42,7 +48,7 @@ Details of available stocks.
 
 ---
 
-### **3. Portfolios**
+### 3. Portfolios
 
 Represents user portfolios.
 
@@ -54,7 +60,7 @@ Represents user portfolios.
 
 ---
 
-### **4. Portfolio_Stocks**
+### 4. Portfolio_Stocks
 
 Tracks stocks held in portfolios.
 
@@ -68,7 +74,7 @@ Tracks stocks held in portfolios.
 
 ---
 
-### **5. Transactions**
+### 5. Transactions
 
 Records buy/sell transactions.
 
@@ -84,7 +90,7 @@ Records buy/sell transactions.
 
 ---
 
-### **6. Stock_Prices**
+### 6. Stock_Prices
 
 Stores historical stock prices.
 
@@ -97,7 +103,7 @@ Stores historical stock prices.
 
 ---
 
-### **7. Dividends**
+### 7. Dividends
 
 Records dividend payouts.
 
@@ -110,7 +116,7 @@ Records dividend payouts.
 
 ---
 
-### **8. Alerts**
+### 8. Alerts
 
 Tracks user-defined alerts.
 
@@ -125,7 +131,7 @@ Tracks user-defined alerts.
 
 ---
 
-### **9. Watchlist**
+### 9. Watchlist
 
 Tracks stocks watched by users.
 
@@ -137,7 +143,7 @@ Tracks stocks watched by users.
 
 ---
 
-### **10. Sectors**
+### 10. Sectors
 
 Stores stock market sectors.
 
@@ -148,7 +154,7 @@ Stores stock market sectors.
 
 ---
 
-### **11. Stock_Sectors**
+### 11. Stock_Sectors
 
 Associates stocks with sectors.
 
@@ -160,7 +166,7 @@ Associates stocks with sectors.
 
 ---
 
-### **12. Settings**
+### 12. Settings
 
 User notification preferences.
 
@@ -172,34 +178,98 @@ User notification preferences.
 
 ---
 
-## **Procedures & Functions Implemented**
+## Procedures & Functions
 
-1. **Procedures**
+### Procedures
 
-* `execute_transaction(portfolio_id, stock_id, transaction_type, quantity, price)`
-  → Handles buy/sell and updates `Portfolio_Stocks` automatically.
+1. **execute_transaction(portfolio_id, stock_id, transaction_type, quantity, price)**
 
-* `insert_stock_price(stock_id, price)`
-  → Updates `Stocks.current_price` and adds row in `Stock_Prices`; triggers alerts if thresholds crossed.
+   * Handles buy/sell transactions.
+   * Automatically updates Portfolio_Stocks quantity and average price.
+   * Inserts record into Transactions table.
 
-* `portfolio_value(portfolio_id)`
-  → Returns total value of a portfolio using current stock prices.
+2. **insert_stock_price(stock_id, price)**
 
-2. **Functions**
+   * Updates Stocks.current_price.
+   * Inserts a new entry into Stock_Prices.
+   * Triggers any alerts if the updated price crosses thresholds.
 
-* `get_avg_price(portfolio_id, stock_id)` → Returns average price of a stock in a portfolio.
-* `has_stock(portfolio_id, stock_id)` → Returns 1 if the portfolio holds the stock, else 0.
-* `total_shares(portfolio_id)` → Returns total shares in a portfolio.
+3. **portfolio_value(portfolio_id)**
 
-3. **Triggers**
-
-* On **Users insert** → Automatically populate default row in `Settings`.
-* On **Transactions insert** → Update `Portfolio_Stocks` quantity & average price automatically.
-* On **Stock_Prices insert** → Update `Stocks.current_price` automatically.
+   * Calculates total value of a portfolio by summing (quantity × current_price) for all stocks.
 
 ---
 
-## **Sample Inserts (Base Data)**
+### Functions
+
+1. **get_avg_price(portfolio_id, stock_id)**
+
+   * Returns the average purchase price for a stock in a portfolio.
+   * Returns 0 if the stock is not found.
+
+2. **has_stock(portfolio_id, stock_id)**
+
+   * Returns 1 if the portfolio holds the stock, else 0.
+
+3. **total_shares(portfolio_id)**
+
+   * Returns total number of shares across all stocks in a portfolio.
+
+---
+
+### Triggers
+
+1. **on_user_insert**
+
+   * After inserting a new user, automatically creates a default Settings row.
+
+2. **on_transaction_insert**
+
+   * Updates Portfolio_Stocks after a new transaction to maintain correct holdings and average prices.
+
+3. **on_stock_price_insert**
+
+   * Updates Stocks.current_price when a new price is inserted into Stock_Prices.
+
+---
+
+## Backend Integration
+
+### Stock Update Endpoint (PUT /stocks/{stock_id})
+
+* Connected to insert_stock_price stored procedure.
+* Updates current price, inserts into Stock_Prices, triggers alerts if thresholds crossed.
+
+**Request Example:**
+
+```
+PUT /stocks/1?current_price=180
+```
+
+**Response Example:**
+
+```json
+{
+  "message": "Stock price updated successfully.",
+  "alerts_triggered": [
+    "ALERT: Stock AAPL (ID=1) triggered alert at price 180.00"
+  ]
+}
+```
+
+---
+
+### Function Router (/functions)
+
+* `GET /functions/avg_price?portfolio_id=1&stock_id=1` → Calls get_avg_price
+* `GET /functions/has_stock?portfolio_id=1&stock_id=2` → Calls has_stock
+* `GET /functions/total_shares?portfolio_id=1` → Calls total_shares
+
+Used for testing and debugging functions directly via API.
+
+---
+
+## Sample Inserts
 
 ```sql
 -- Users
@@ -226,7 +296,7 @@ INSERT IGNORE INTO Portfolios(user_id,name) VALUES
 (4,'David AI Portfolio'),
 (5,'Eve Green Portfolio');
 
--- Portfolio_Stocks (initial holdings)
+-- Portfolio_Stocks
 INSERT IGNORE INTO Portfolio_Stocks(portfolio_id, stock_id, quantity, avg_price) VALUES
 (1,1,10,150),
 (1,2,5,2000),
@@ -235,4 +305,132 @@ INSERT IGNORE INTO Portfolio_Stocks(portfolio_id, stock_id, quantity, avg_price)
 (4,4,10,3500),
 (5,5,8,800);
 ```
+
+---
+
+## Environment Setup
+
+### Prerequisites
+
+* MySQL 8.0+
+* Python 3.10+
+* FastAPI + Uvicorn
+* MySQL Connector/PyMySQL
+
+### Environment Variables
+
+```
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=yourpassword
+DB_NAME=stock_portfolio
+```
+
+### Run Backend
+
+```bash
+uvicorn main:app --reload
+```
+
+Swagger UI: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+---
+
+## Testing via Swagger
+
+### 1. Test User Auto Settings Trigger
+
+**Endpoint:** `POST /users`
+
+**Body:**
+
+```json
+{
+  "name": "Frank",
+  "email": "frank@example.com"
+}
+```
+
+**Expected:**
+
+* User inserted into Users table.
+* Trigger creates default Settings row.
+
+**Verify:**
+
+```sql
+SELECT * FROM Settings WHERE user_id = (SELECT user_id FROM Users WHERE email='frank@example.com');
+```
+
+---
+
+### 2. Test Transaction Procedure
+
+**Endpoint:** `POST /transactions`
+
+**Body:**
+
+```json
+{
+  "portfolio_id": 1,
+  "stock_id": 1,
+  "transaction_type": "BUY",
+  "quantity": 5,
+  "price": 160
+}
+```
+
+**Expected:**
+
+* Transaction recorded in Transactions table.
+* Portfolio_Stocks updated with new quantity and average price.
+* Trigger `on_transaction_insert` executed.
+
+**Verify:**
+
+```sql
+SELECT * FROM Portfolio_Stocks WHERE portfolio_id=1 AND stock_id=1;
+SELECT * FROM Transactions WHERE portfolio_id=1 AND stock_id=1 ORDER BY transaction_time DESC;
+```
+
+---
+
+### 3. Test Stock Price Procedure
+
+**Endpoint:** `PUT /stocks/1?current_price=200`
+
+**Expected:**
+
+* Stock current_price updated in Stocks table.
+* Stock_Prices entry inserted.
+* Any alerts triggered returned in response.
+
+**Verify:**
+
+```sql
+SELECT current_price FROM Stocks WHERE stock_id=1;
+SELECT * FROM Stock_Prices WHERE stock_id=1 ORDER BY price_date DESC;
+```
+
+---
+
+### 4. Test Function Router
+
+* `/functions/avg_price?portfolio_id=1&stock_id=1` → Returns average price.
+* `/functions/has_stock?portfolio_id=1&stock_id=2` → Returns 1 if stock exists.
+* `/functions/total_shares?portfolio_id=1` → Returns total shares.
+
+---
+
+## Summary
+
+This project provides:
+
+* Fully normalized stock portfolio database
+* Automated transactions, pricing, and alerts
+* Integrated backend procedures, functions, and triggers
+* Full support for real-time updates and alert notifications
+* Swagger-based manual testing for easy verification
+
+
 
