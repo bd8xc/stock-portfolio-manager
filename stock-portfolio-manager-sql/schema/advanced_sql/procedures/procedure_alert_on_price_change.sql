@@ -3,10 +3,7 @@ CREATE PROCEDURE insert_stock_price(
     IN p_price DECIMAL(10,2)
 )
 BEGIN
-    -- Update current stock price
-    UPDATE Stocks
-    SET current_price = p_price
-    WHERE stock_id = p_stock_id;
+    
 
     -- Insert into Stock_Prices with microseconds
     INSERT INTO Stock_Prices (stock_id, price, price_date)
